@@ -21,7 +21,6 @@ import {
   Database,
   Settings
 } from 'lucide-react';
-import { io } from 'socket.io-client';
 import { encodeVaultPayload } from '../utils/crypto';
 import { playClick, playPop, playSuccessChime, playAlert } from '../utils/sound';
 import {
@@ -95,7 +94,7 @@ export default function Dashboard({ showToast }) {
     } catch (e) {}
   }, [accounts]);
 
-  // Realtime Listeners (Supabase Realtime + Socket.io fallback)
+  // Realtime Listeners (Supabase Realtime)
   useEffect(() => {
     const supabase = getSupabase();
     let channel = null;
@@ -132,29 +131,8 @@ export default function Dashboard({ showToast }) {
         .subscribe();
     }
 
-    // Socket.io Realtime fallback
-    let socket;
-    try {
-      socket = io(window.location.origin, {
-        transports: ['websocket', 'polling']
-      });
-
-      socket.on('vault:opened', ({ id }) => {
-        playAlert();
-        setLiveEvents((prev) => ({ ...prev, [id]: 'opened' }));
-        showToast('📱 تم فتح الرابط على الهاتف الآن!', 'info');
-      });
-
-      socket.on('vault:claimed', ({ id }) => {
-        playSuccessChime();
-        setLiveEvents((prev) => ({ ...prev, [id]: 'claimed' }));
-        showToast('🎉 تم النقر على "موافق" وإضافة البريد في الهاتف!', 'success');
-      });
-    } catch (err) {}
-
     return () => {
       if (channel && supabase) supabase.removeChannel(channel);
-      if (socket) socket.disconnect();
     };
   }, [hasSupabase]);
 
