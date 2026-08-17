@@ -5,13 +5,7 @@
   publish = "dist"
   functions = "netlify/functions"
 
-# Netlify Functions must be excluded from SPA redirect
-[[redirects]]
-  from = "/.netlify/functions/*"
-  status = 200
-  force = true
-
-# SPA fallback: all other routes go to index.html
+# SPA fallback: all routes go to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
