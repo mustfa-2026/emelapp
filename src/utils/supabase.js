@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Default from environment variables or LocalStorage override
+// Default Supabase project credentials
+const DEFAULT_SUPABASE_URL = 'https://yxlqqjhfnikjuuuiekcq.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4bHFxamhmbmlranV1dWlla2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5ODY3NjYsImV4cCI6MjEwMjU2Mjc2Nn0.JrpxEEOgjx9pzRHYmHUUCGFDvmbKjSLPByLJ_IZB2ss';
+
 const CONFIG_KEY = 'uservault_supabase_config_v1';
 
 export function getSupabaseConfig() {
@@ -12,14 +15,14 @@ export function getSupabaseConfig() {
     }
   } catch (e) {}
 
-  const envUrl = import.meta.env.VITE_SUPABASE_URL;
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const envUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
   if (envUrl && envKey) {
     return { url: envUrl, key: envKey };
   }
 
-  return null;
+  return { url: DEFAULT_SUPABASE_URL, key: DEFAULT_SUPABASE_ANON_KEY };
 }
 
 export function saveSupabaseConfig(url, key) {
@@ -155,10 +158,11 @@ export async function dbGetVault(id) {
     .single();
 
   if (error || !data) {
+    console.warn('dbGetVault not found or error:', error);
     return null;
   }
 
-  // Mark as opened if not opened
+  // Mark as opened
   if (!data.opened_at) {
     supabase
       .from('vaults')
