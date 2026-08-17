@@ -5,6 +5,9 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "20.18.0"
+
 # SPA fallback: all routes go to index.html
 [[redirects]]
   from = "/*"
