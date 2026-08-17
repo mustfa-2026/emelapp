@@ -1,0 +1,25 @@
+# Netlify Configuration for UserVault
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Netlify Functions must be excluded from SPA redirect
+[[redirects]]
+  from = "/.netlify/functions/*"
+  status = 200
+  force = true
+
+# SPA fallback: all other routes go to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
